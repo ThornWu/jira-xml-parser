@@ -1,10 +1,10 @@
 {
   "name": "@thornfe/jira-xml-parser",
   "version": "0.1.0",
-  "description": "Lightweight Jira Xml Parser for big files (uses node-expat)",
+  "description": "Lightweight Jira Xml Parser for big files (uses sax)",
   "author": {
-    "name": "John Hewson",
-    "url": "https://github.com/johnhewson"
+    "name": "Thorn Wu",
+    "url": "https://github.com/ThornWu"
   },
   "contributors": [
     {
@@ -30,20 +30,33 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsup src/index.ts --format cjs --dts",
     "dev": "ts-node index.ts",
     "prepare": "npm run build",
-    "test": "vitest run"
+    "test": "vitest run",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix"
   },
   "dependencies": {
     "es-toolkit": "^1.35.0",
-    "node-expat": "^2.4.0"
+    "sax": "^1.3.0"
   },
   "devDependencies": {
+    "tsup": "^8.0.2",
     "@types/node": "^22.14.1",
-    "@types/node-expat": "^2.3.5",
+    "@types/sax": "^1.2.7",
+    "@typescript-eslint/eslint-plugin": "^6.18.1",
+    "@typescript-eslint/parser": "^6.18.1",
+    "eslint": "^8.57.0",
+
     "ts-node": "^10.9.2",
+    "tslib": "^2.8.1",
     "typescript": "^5.8.3",
     "vitest": "^3.1.2"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "sax@1.4.1": "patches/sax@1.4.1.patch"
+    }
   }
 }

@@ -1,4 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <entity-engine-xml>
+  <TextView
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:text="@string/hello";
+  />
   <Action id="10116" issue="10010" author="JIRAUSER10000" type="comment" created="2024-12-19 06:28:10.843" updateauthor="JIRAUSER10000" updated="2024-12-19 06:28:10.843">
     <body><![CDATA[*这是一堆备注备注*
 

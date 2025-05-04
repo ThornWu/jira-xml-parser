@@ -1,51 +1,53 @@
-# big-xml -- Lightweight XML parser for really big files
+# @thornfe/jira-xml-parser
 
-A record-by-record XML reader, for [node.js](http://nodejs.org/), based on [node-expat](https://github.com/astro/node-expat).
+A lightweight Jira XML parser built on [sax](https://github.com/isaacs/node-sax), specifically designed for handling large files.
 
-Designed for big XML files (1GB+), and low memory usage.
+> Only support Jira Entity File now.
 
-## Install
+## Features
 
-    npm install big-xml
+- Optimized for large XML files (1GB+)
+- Low memory footprint
+- Stream processing support
+- Written in TypeScript with complete type definitions
 
-or from source:
+## Installation
 
-    git clone git://github.com/jahewson/node-big-xml.git
-    cd node-big-xml
-    npm link
+```bash
+npm install @thornfe/jira-xml-parser
+```
 
-#Example
+## Usage
 
-XML files are streamed, and parsed one record at a time, which keeps memory usage low.
+```typescript
+import { XmlReader } from '@thornfe/jira-xml-parser';
 
-You must specify which XML elements should be considered as the root of a record, using a regex. In this
-example the elements Foo and Bar will be emitted as records.
+const reader = new XmlReader();
 
-```javascript
-var bigXml = require('big-xml');
-
-var reader = bigXml.createReader('data.xml.gz', /^(Foo|Bar)$/, { gzip: true });
-
-reader.on('record', function(record, tag) {
-  console.log(record);
+// Read specific entities
+reader.on('entity', (entity) => {
+  console.log(entity);
 });
-```
 
-The output would take the form:
-
-```javascript
-{ tag: 'Foo',
-  attrs: { Name: 'John', Status: 'Student' },
-  children: [
-    { tag: 'Color', text: 'blue'}
-  ]
-}
-```
-
-And if you want to handle errors (by default they are thrown):
-
-```
-reader.on('error', function(err) {
-  console.log(err);
+// Handle errors
+reader.on('error', (error) => {
+  console.error(error);
 });
+
+// Start parsing
+reader.parse('path/to/your/file.xml');
 ```
+
+## API
+
+### XmlReader
+
+The main parser class that emits the following events:
+
+- `entity`: Triggered when a matching entity is found
+- `error`: Triggered when an error occurs during parsing
+- `end`: Triggered when parsing is complete
+
+## License
+
+MIT

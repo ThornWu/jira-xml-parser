@@ -5,7 +5,7 @@ import { createEntityPattern } from '../utils';
 
 export const readEntityFile = async (filename: string, entities: Array<EntityType>, _compareFunc?: (record: Record<string, any>) => boolean) => {
   const entityPattern = createEntityPattern(entities);
-  const reader = createReader(filename, { entityPattern, childrenAsProps: true });
+  const reader = createReader(filename, { entityPattern, isEntityFile: true });
   const records: Record<string, Array<Omit<XmlNode, '_tag'>>> = {};
   const compareFunc = typeof _compareFunc === 'function' ? _compareFunc : () => true;
 
@@ -16,6 +16,7 @@ export const readEntityFile = async (filename: string, entities: Array<EntityTyp
       }
       const tagName = record._tag;
       delete record._tag;
+      delete record._level;
       if (!records[tagName]) {
         records[tagName] = [record];
       } else {

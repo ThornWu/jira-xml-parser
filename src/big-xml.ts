@@ -1,4 +1,4 @@
-import { Parser } from 'node-expat';
+import * as sax from 'sax';
 import { createReadStream, type ReadStream } from 'fs';
 import { EventEmitter } from 'events';
 import { cloneDeep } from 'es-toolkit';
@@ -6,8 +6,8 @@ import { cloneDeep } from 'es-toolkit';
 export interface BigXmlReaderOptions {
   /** 一级过滤，过滤 xml 标签名 */
   entityPattern: RegExp;
-  /** 节点输出时，是否将 children 展开为节点属性 */
-  childrenAsProps?: boolean;
+  /** 是否为 EntityFile */
+  isEntityFile?: boolean;
 }
 
 export interface XmlNode {
@@ -16,108 +16,88 @@ export interface XmlNode {
 }
 
 class BigXmlReader extends EventEmitter {
-  private parser: Parser;
+  private parser: sax.SAXStream;
   private stream: ReadStream;
   private node: Partial<XmlNode>;
   private nodes: Partial<XmlNode>[];
-  private record: XmlNode | undefined;
-  private isCapturing: boolean;
+
   private level: number;
-  private childrenAsProps: boolean;
+  private isEntityFile: boolean;
 
   constructor(filename: string, options: BigXmlReaderOptions) {
     super();
 
-    this.parser = new Parser('UTF-8');
+    this.parser = sax.createStream(false, { trim: false });
     this.stream = createReadStream(filename);
     this.node = {};
     this.nodes = [];
-    this.record = undefined;
-    this.isCapturing = false;
     this.level = 0;
-    this.childrenAsProps = options.childrenAsProps || false;
+    this.isEntityFile = options.isEntityFile || false;
 
-    this.setupStreamHandlers();
     this.setupParserHandlers(options.entityPattern);
+    this.stream.pipe(this.parser);
   }
 
-  private setupStreamHandlers(): void {
-    this.stream.on('data', (data: string | Buffer) => {
-      if (!this.parser.parse(data)) {
-        this.emit('error', new Error('XML Error: ' + this.parser.getError()));
-      } else {
-        this.emit('data', data);
-      }
+  private setupParserHandlers(entityPattern: RegExp): void {
+    this.parser.on('error', (err: Error) => {
+      this.emit('error', new Error(err.message));
     });
 
     this.stream.on('error', (err: Error) => {
       this.emit('error', new Error(err.message));
     });
-  }
 
-  private setupParserHandlers(entityPattern: RegExp): void {
-    this.parser.on('startElement', (name: string, attrs: Record<string, string>) => {
+    this.parser.on('opentag', (_node: sax.Tag) => {
       this.level++;
+      const name = _node.name;
+      const attrs = _node.attributes;
+      const child: XmlNode = { _tag: name, ...attrs, _level: this.level };
 
-      if (!this.isCapturing && !name.match(entityPattern)) {
-        return;
-      } else if (!this.isCapturing) {
-        this.isCapturing = true;
-        this.node = {};
-        this.nodes = [];
-        this.record = undefined;
+      if (this.level === this.node._level) {
+        this.node = this.nodes[this.nodes.length - 1];
       }
 
-
-      if (!this.node.children) {
-        this.node.children = [];
+      // 第 1 层不作为第 0 层的 children
+      if (this.level > 1) {
+        // entity 文件不记录根节点下的 children，否则按需没有意义
+        if (!this.isEntityFile || !(this.level <= 2)) {
+          if (!this.node.children) {
+            this.node.children = [];
+          }
+          this.node.children.push(child);
+        }
       }
 
-      const child: XmlNode = { _tag: name, ...attrs };
-
-      this.node.children.push(child);
-
-      this.nodes.push(this.node);
       this.node = child;
-
-      if (name.match(entityPattern)) {
-        this.record = child;
-      }
+      this.nodes.push(child);
     });
 
-    this.parser.on('text', (txt: string) => {
-      if (!this.isCapturing) {
-        return;
-      }
-
-      if (txt.length > 0) {
+    this.parser.on('cdata', (txt: string) => {
+      if (txt?.length > 0) {
         if (this.node.text === undefined) {
           this.node.text = txt;
         } else {
           this.node.text += txt;
         }
       }
-    });
+    })
 
-    this.parser.on('endElement', (name: string) => {
+    this.parser.on('closetag', (name: string) => {
       this.level--;
       this.node = this.nodes.pop() || {};
 
       if (name.match(entityPattern)) {
-        this.isCapturing = false;
-        if (this.record) {
-          if (this.childrenAsProps) {
-            let record = cloneDeep(this.record);
-            const children = record.children || [];
-            record = {...record,...children.reduce((acc: Record<string, XmlNode>, child: XmlNode) => {
-              acc[child._tag] = child.text;
-              return acc;
-            }, {} as Record<string, XmlNode>) };
-            delete (record as any)?.children;
-            this.emit('record', record);
-          } else {
-            this.emit('record', this.record);
-          }
+        if (this.isEntityFile) {
+          let record = cloneDeep(this.node);
+          const children = record.children || [];
+          record = {...record,...children.reduce((acc: Record<string, XmlNode>, child: XmlNode) => {
+            acc[child._tag] = child.text;
+            return acc;
+          }, {} as Record<string, XmlNode>) };
+          delete (record as any)?.children;
+          this.emit('record', record);
+        } else {
+          this.emit('record', this.node);
         }
       }
 
@@ -125,6 +105,16 @@ class BigXmlReader extends EventEmitter {
         this.emit('end');
       }
     });
+
+    // this.parser.on('text', (txt: string) => {
+    //   if (txt.length > 0) {
+    //     if (this.node.text === undefined) {
+    //       this.node.text = txt;
+    //     } else {
+    //       this.node.text += txt;
+    //     }
+    //   }
+    // });
   }
 
   public pause(): void {

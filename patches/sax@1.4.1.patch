@@ -1,0 +1,41 @@
+diff --git a/lib/sax.js b/lib/sax.js
+index 122ad8e5a478339d56fc86d00d21c5d142739f0e..3466d894bc0021def0f189da725acd28093e0e9e 100644
+--- a/lib/sax.js
++++ b/lib/sax.js
+@@ -53,7 +53,6 @@
+     parser.bufferCheckPosition = sax.MAX_BUFFER_LENGTH
+     parser.opt = opt || {}
+     parser.opt.lowercase = parser.opt.lowercase || parser.opt.lowercasetags
+-    parser.looseCase = parser.opt.lowercase ? 'toLowerCase' : 'toUpperCase'
+     parser.tags = []
+     parser.closed = parser.closedRoot = parser.sawRoot = false
+     parser.tag = parser.error = null
+@@ -686,7 +685,9 @@
+   }
+ 
+   function newTag (parser) {
+-    if (!parser.strict) parser.tagName = parser.tagName[parser.looseCase]()
++    if (!parser.strict) {
++
++    }
+     var parent = parser.tags[parser.tags.length - 1] || parser
+     var tag = parser.tag = { name: parser.tagName, attributes: {} }
+ 
+@@ -715,7 +716,7 @@
+ 
+   function attrib (parser) {
+     if (!parser.strict) {
+-      parser.attribName = parser.attribName[parser.looseCase]()
++
+     }
+ 
+     if (parser.attribList.indexOf(parser.attribName) !== -1 ||
+@@ -868,7 +869,7 @@
+     var t = parser.tags.length
+     var tagName = parser.tagName
+     if (!parser.strict) {
+-      tagName = tagName[parser.looseCase]()
++
+     }
+     var closeTo = tagName
+     while (t--) {
