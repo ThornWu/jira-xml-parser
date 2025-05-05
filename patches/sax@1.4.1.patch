@@ -1,7 +1,16 @@
 diff --git a/lib/sax.js b/lib/sax.js
-index 122ad8e5a478339d56fc86d00d21c5d142739f0e..3466d894bc0021def0f189da725acd28093e0e9e 100644
+index 122ad8e5a478339d56fc86d00d21c5d142739f0e..e512dca1f7c236d0bbe0a65650e2ee4a6206104d 100644
 --- a/lib/sax.js
 +++ b/lib/sax.js
+@@ -13,7 +13,7 @@
+   // the caller, so it is assumed to be safe.  Thus, a call to write() may, in the extreme
+   // edge case, result in creating at most one complete copy of the string passed in.
+   // Set to Infinity to have unlimited buffers.
+-  sax.MAX_BUFFER_LENGTH = 64 * 1024
++  sax.MAX_BUFFER_LENGTH = Infinity;
+ 
+   var buffers = [
+     'comment', 'sgmlDecl', 'textNode', 'tagName', 'doctype',
 @@ -53,7 +53,6 @@
      parser.bufferCheckPosition = sax.MAX_BUFFER_LENGTH
      parser.opt = opt || {}

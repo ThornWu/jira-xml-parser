@@ -2,7 +2,7 @@ lockfileVersion: 5.4
 
 patchedDependencies:
   sax@1.4.1:
-    hash: 4gq5lvrtxm5sa4i4nxruxcugvy
+    hash: ni2acl7peavcgac4kktjga6g6u
     path: patches/sax@1.4.1.patch
 
 specifiers:
@@ -21,7 +21,7 @@ specifiers:
 
 dependencies:
   es-toolkit: 1.35.0
-  sax: 1.4.1_4gq5lvrtxm5sa4i4nxruxcugvy
+  sax: 1.4.1_ni2acl7peavcgac4kktjga6g6u
 
 devDependencies:
   '@types/node': 22.14.1
@@ -1779,7 +1779,7 @@ packages:
       queue-microtask: 1.2.3
     dev: true
 
-  /sax/1.4.1_4gq5lvrtxm5sa4i4nxruxcugvy:
+  /sax/1.4.1_ni2acl7peavcgac4kktjga6g6u:
     resolution: {integrity: sha512-+aWOz7yVScEGoKNd4PA10LZ8sk0A/z5+nXQG5giUO5rprX9jgYsTdov9qCchZiPIZezbZH+jRut8nPodFAX4Jg==}
     dev: false
     patched: true
