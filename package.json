@@ -1,0 +1,49 @@
+{
+  "name": "@thornfe/jira-xml-parser",
+  "version": "0.1.0",
+  "description": "Lightweight Jira Xml Parser for big files (uses node-expat)",
+  "author": {
+    "name": "John Hewson",
+    "url": "https://github.com/johnhewson"
+  },
+  "contributors": [
+    {
+      "name": "Thorn Wu",
+      "url": "https://github.com/ThornWu"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/ThornWu/jira-xml-parser",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ThornWu/jira-xml-parser.git"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node index.ts",
+    "prepare": "npm run build",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "es-toolkit": "^1.35.0",
+    "node-expat": "^2.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "@types/node-expat": "^2.3.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.2"
+  }
+}
