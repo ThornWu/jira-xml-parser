@@ -1,8 +1,10 @@
 import * as sax from 'sax';
 import { createReadStream, type ReadStream } from 'fs';
 import { EventEmitter } from 'events';
-import { cloneDeep } from 'es-toolkit';
 
+const cloneDeep = <T>(obj: T): T => {
+  return JSON.parse(JSON.stringify(obj));
+}
 export interface BigXmlReaderOptions {
   /** 一级过滤，过滤 xml 标签名 */
   entityPattern: RegExp;

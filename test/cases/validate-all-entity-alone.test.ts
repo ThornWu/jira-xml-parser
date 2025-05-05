@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { expect } from 'chai';
 import { readEntityFile } from '../../src';
 import fs from 'fs';
 import path from 'path';
@@ -15,7 +15,7 @@ describe('validate-all-entity-alone', () => {
       // 使用 readEntityFile 处理 XML
       const result = await readEntityFile(xmlPath, [entityType]);
       // 比较结果
-      expect((result as any)[entityType]).toEqual(allJson[entityType]);
+      expect((result as any)[entityType]).to.deep.equal(allJson[entityType]);
     });
   });
 });

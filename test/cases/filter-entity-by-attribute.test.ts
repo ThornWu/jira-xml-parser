@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { expect } from 'chai';
 import { readEntityFile } from '../../src';
 import fs from 'fs';
 import path from 'path';
@@ -23,7 +23,7 @@ describe('filter-entity-by-attribute.test', () => {
     // 使用 readEntityFile 处理 XML
     const result = await readEntityFile(xmlPath, [ENTITY_MAP.Action, ENTITY_MAP.CustomFieldValue, ENTITY_MAP.FileAttachment, ENTITY_MAP.Label, ENTITY_MAP.UserAssociation, ENTITY_MAP.Worklog], filterFunc);
     // 比较结果
-    expect(result).toEqual(omitBy({
+    expect(result).to.deep.equal(omitBy({
       [ENTITY_MAP.Action]: arrayFilterFunc(allJson[ENTITY_MAP.Action]),
       [ENTITY_MAP.CustomFieldValue]: arrayFilterFunc(allJson[ENTITY_MAP.CustomFieldValue]),
       [ENTITY_MAP.FileAttachment]: arrayFilterFunc(allJson[ENTITY_MAP.FileAttachment]),

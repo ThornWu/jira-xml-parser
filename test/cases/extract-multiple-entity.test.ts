@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { expect } from 'chai';
 import { readEntityFile } from '../../src';
 import fs from 'fs';
 import path from 'path';
@@ -13,6 +13,6 @@ describe('extract multiple entity', () => {
     // 使用 readEntityFile 处理 XML
     const result = await readEntityFile(xmlPath, [ENTITY_MAP.Action, ENTITY_MAP.Issue]);
     // 比较结果
-    expect(result).toEqual({ [ENTITY_MAP.Action]: allJson[ENTITY_MAP.Action], [ENTITY_MAP.Issue]: allJson[ENTITY_MAP.Issue]});
+    expect(result).to.deep.equal({ [ENTITY_MAP.Action]: allJson[ENTITY_MAP.Action], [ENTITY_MAP.Issue]: allJson[ENTITY_MAP.Issue]});
   });
 });
