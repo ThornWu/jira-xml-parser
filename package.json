@@ -31,7 +31,7 @@
   },
   "scripts": {
     "build": "tsup src/index.ts --format cjs --dts",
-    "dev": "ts-node index.ts",
+    "dev": "ts-node whole/index.ts",
     "prepare": "npm run build",
     "test": "mocha -r ts-node/register 'test/**/*.test.ts'",
     "lint": "eslint . --ext .ts",

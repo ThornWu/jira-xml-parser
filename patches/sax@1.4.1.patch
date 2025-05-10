@@ -1,5 +1,5 @@
 diff --git a/lib/sax.js b/lib/sax.js
-index 122ad8e5a478339d56fc86d00d21c5d142739f0e..e512dca1f7c236d0bbe0a65650e2ee4a6206104d 100644
+index 122ad8e5a478339d56fc86d00d21c5d142739f0e..fbc7f64e1f3520f8cb9e2f476b3102ef3313f006 100644
 --- a/lib/sax.js
 +++ b/lib/sax.js
 @@ -13,7 +13,7 @@
@@ -19,6 +19,17 @@ index 122ad8e5a478339d56fc86d00d21c5d142739f0e..e512dca1f7c236d0bbe0a65650e2ee4a
      parser.tags = []
      parser.closed = parser.closedRoot = parser.sawRoot = false
      parser.tag = parser.error = null
+@@ -643,8 +642,8 @@
+   }
+ 
+   function textopts (opt, text) {
+-    if (opt.trim) text = text.trim()
+-    if (opt.normalize) text = text.replace(/\s+/g, ' ')
++    // if (opt.trim) text = text.trim()
++    // if (opt.normalize) text = text.replace(/\s+/g, ' ')
+     return text
+   }
+ 
 @@ -686,7 +685,9 @@
    }
  
@@ -30,21 +41,24 @@ index 122ad8e5a478339d56fc86d00d21c5d142739f0e..e512dca1f7c236d0bbe0a65650e2ee4a
      var parent = parser.tags[parser.tags.length - 1] || parser
      var tag = parser.tag = { name: parser.tagName, attributes: {} }
  
-@@ -715,7 +716,7 @@
+@@ -714,10 +715,6 @@
+   }
  
    function attrib (parser) {
-     if (!parser.strict) {
+-    if (!parser.strict) {
 -      parser.attribName = parser.attribName[parser.looseCase]()
-+
-     }
- 
+-    }
+-
      if (parser.attribList.indexOf(parser.attribName) !== -1 ||
-@@ -868,7 +869,7 @@
+       parser.tag.attributes.hasOwnProperty(parser.attribName)) {
+       parser.attribName = parser.attribValue = ''
+@@ -867,9 +864,6 @@
+     // <a><b></c></b></a> will close everything, otherwise.
      var t = parser.tags.length
      var tagName = parser.tagName
-     if (!parser.strict) {
+-    if (!parser.strict) {
 -      tagName = tagName[parser.looseCase]()
-+
-     }
+-    }
      var closeTo = tagName
      while (t--) {
+       var close = parser.tags[t]
