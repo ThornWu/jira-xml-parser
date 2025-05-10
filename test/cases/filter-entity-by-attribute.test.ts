@@ -23,13 +23,13 @@ describe('filter-entity-by-attribute.test', () => {
     // 使用 readEntityFile 处理 XML
     const result = await readEntityFile(xmlPath, [ENTITY_MAP.Action, ENTITY_MAP.CustomFieldValue, ENTITY_MAP.FileAttachment, ENTITY_MAP.Label, ENTITY_MAP.UserAssociation, ENTITY_MAP.Worklog], filterFunc);
     // 比较结果
-    expect(result).to.deep.equal(omitBy({
+    expect(result).to.deep.equal({
       [ENTITY_MAP.Action]: arrayFilterFunc(allJson[ENTITY_MAP.Action]),
       [ENTITY_MAP.CustomFieldValue]: arrayFilterFunc(allJson[ENTITY_MAP.CustomFieldValue]),
       [ENTITY_MAP.FileAttachment]: arrayFilterFunc(allJson[ENTITY_MAP.FileAttachment]),
       [ENTITY_MAP.Label]: arrayFilterFunc(allJson[ENTITY_MAP.Label]),
       [ENTITY_MAP.UserAssociation]: arrayFilterFunc(allJson[ENTITY_MAP.UserAssociation]),
       [ENTITY_MAP.Worklog]: arrayFilterFunc(allJson[ENTITY_MAP.Worklog])
-    }, value => value.length === 0));
+    });
   });
 });

@@ -2,11 +2,17 @@ import { EntityParser, type XmlNode } from '../xml-parser/entity-parser';
 import { EntityType } from '../constants';
 import { createEntityPattern, getLastEntityType } from '../utils';
 
+
+type IRecord = Omit<XmlNode, '_tag'>;
+
 export const readEntityFile = async (filename: string, entities: Array<EntityType>, _compareFunc?: (record: Record<string, unknown>) => boolean) => {
   const lastEntity = getLastEntityType(entities);
   const entityPattern = createEntityPattern(entities);
   const reader = new EntityParser(filename, { entityPattern, lastEntity });
-  const records: Record<string, Array<Omit<XmlNode, '_tag'>>> = {};
+  const records: Record<string, Array<IRecord>> = entities.reduce((acc, current) => {
+    acc[current] = [];
+    return acc;
+  }, {} as Record<string, Array<IRecord>>);
   const compareFunc = typeof _compareFunc === 'function' ? _compareFunc : () => true;
 
   return new Promise((resolve, reject) => {
@@ -21,12 +27,7 @@ export const readEntityFile = async (filename: string, entities: Array<EntityTyp
         });
       }
       const tagName = _tag;
-
-      if (!records[tagName]) {
-        records[tagName] = [record];
-      } else {
-        records[tagName].push(record);
-      }
+      records[tagName].push(record);
     })
 
     reader.on('end', function() {
