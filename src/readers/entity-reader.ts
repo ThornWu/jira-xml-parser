@@ -1,14 +1,14 @@
 import { EntityParser, type XmlNode } from '../xml-parser/entity-parser';
 import { EntityType } from '../constants';
-import { createEntityPattern, getLastEntityType } from '../utils';
+import { createEntitySet, getLastEntityType } from '../utils';
 
 
 type IRecord = Omit<XmlNode, '_tag'>;
 
 export const readEntityFile = async (filename: string, entities: Array<EntityType>, _compareFunc?: (record: Record<string, unknown>) => boolean) => {
   const lastEntity = getLastEntityType(entities);
-  const entityPattern = createEntityPattern(entities);
-  const reader = new EntityParser(filename, { entityPattern, lastEntity });
+  const entitySet = createEntitySet(entities);
+  const reader = new EntityParser(filename, { entitySet, lastEntity });
   const records: Record<string, Array<IRecord>> = entities.reduce((acc, current) => {
     acc[current] = [];
     return acc;

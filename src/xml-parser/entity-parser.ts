@@ -3,7 +3,7 @@ import { createReadStream, type ReadStream } from 'fs';
 import { EventEmitter } from 'events';
 export interface EntityReaderOptions {
   /** 一级过滤，过滤 xml 标签名 */
-  entityPattern: RegExp;
+  entitySet: Set<string>;
   /** 最后一个实体名，用于提前跳出 */
   lastEntity: string;
 }
@@ -24,6 +24,7 @@ export class EntityParser extends EventEmitter {
   private level: number;
   private isSkip: boolean;
   private lastEntity: string;
+  private tagCache: Map<string, boolean>;
 
   constructor(filename: string, options: EntityReaderOptions) {
     super();
@@ -35,12 +36,22 @@ export class EntityParser extends EventEmitter {
     this.level = 0;
     this.isSkip = false;
     this.lastEntity = options.lastEntity || '';
+    this.tagCache = new Map();
 
-    this.setupParserHandlers(options.entityPattern);
+    this.setupParserHandlers(options.entitySet);
     this.stream.pipe(this.parser);
   }
 
-  private setupParserHandlers(entityPattern: RegExp): void {
+  private isValidTag(name: string): boolean {
+    let result = this.tagCache.get(name);
+    if (result === undefined) {
+      result = name.localeCompare(this.lastEntity) <= 0;
+      this.tagCache.set(name, result);
+    }
+    return result;
+  }
+
+  private setupParserHandlers(entitySet: Set<string>): void {
     this.parser.on('error', (err: Error) => {
       this.emit('error', new Error(err.message));
     });
@@ -48,10 +59,10 @@ export class EntityParser extends EventEmitter {
     this.parser.on('opentag', (_node: sax.Tag) => {
       this.level++;
       const name = _node.name;
-      this.isSkip = this.level === 1
-        ? false
-        : this.level === 2
-          ? !entityPattern.test(name)
+      this.isSkip = this.level === 2
+        ? !entitySet.has(name)
+        : this.level === 1
+          ? false
           : this.isSkip;
       if (this.isSkip) {
         return;
@@ -92,12 +103,12 @@ export class EntityParser extends EventEmitter {
       if (!this.isSkip && this.level > 0) {
         this.node = this.nodes.pop() || {};
 
-        if (entityPattern.test(name)) {
+        if (entitySet.has(name)) {
           this.emit('record', this.node);
         }
       } else {
         // 如果当前标签的字母序已经超过了最后一个实体，提前结束解析
-        if (this.lastEntity && this.level === 1 && name.localeCompare(this.lastEntity) > 0) {
+        if (this.level === 1 && !this.isValidTag(name)) {
           this.stream.destroy();
           this.emit('end');
           return;

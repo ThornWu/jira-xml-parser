@@ -2,7 +2,7 @@ lockfileVersion: 5.4
 
 patchedDependencies:
   sax@1.4.1:
-    hash: cmuigcgmhhqdczrv6f4honlgpy
+    hash: ffpowda74fvni3hvae652xzqhm
     path: patches/sax@1.4.1.patch
 
 specifiers:
@@ -25,7 +25,7 @@ specifiers:
 
 dependencies:
   es-toolkit: 1.35.0
-  sax: 1.4.1_cmuigcgmhhqdczrv6f4honlgpy
+  sax: 1.4.1_ffpowda74fvni3hvae652xzqhm
 
 devDependencies:
   '@types/chai': 4.3.20
@@ -1932,7 +1932,7 @@ packages:
     resolution: {integrity: sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==}
     dev: true
 
-  /sax/1.4.1_cmuigcgmhhqdczrv6f4honlgpy:
+  /sax/1.4.1_ffpowda74fvni3hvae652xzqhm:
     resolution: {integrity: sha512-+aWOz7yVScEGoKNd4PA10LZ8sk0A/z5+nXQG5giUO5rprX9jgYsTdov9qCchZiPIZezbZH+jRut8nPodFAX4Jg==}
     dev: false
     patched: true

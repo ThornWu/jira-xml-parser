@@ -1,5 +1,5 @@
 diff --git a/lib/sax.js b/lib/sax.js
-index 122ad8e5a478339d56fc86d00d21c5d142739f0e..fbc7f64e1f3520f8cb9e2f476b3102ef3313f006 100644
+index 122ad8e5a478339d56fc86d00d21c5d142739f0e..15afabaca31c26ab9d085e39f555bc5873c185c2 100644
 --- a/lib/sax.js
 +++ b/lib/sax.js
 @@ -13,7 +13,7 @@
@@ -62,3 +62,16 @@ index 122ad8e5a478339d56fc86d00d21c5d142739f0e..fbc7f64e1f3520f8cb9e2f476b3102ef
      var closeTo = tagName
      while (t--) {
        var close = parser.tags[t]
+@@ -1533,9 +1527,9 @@
+       }
+     } // while
+ 
+-    if (parser.position >= parser.bufferCheckPosition) {
+-      checkBufferLength(parser)
+-    }
++    // if (parser.position >= parser.bufferCheckPosition) {
++    //   checkBufferLength(parser)
++    // }
+     return parser
+   }
+ 

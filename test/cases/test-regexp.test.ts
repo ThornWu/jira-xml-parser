@@ -1,15 +1,16 @@
 import { expect } from 'chai';
-import { createEntityPattern, ENTITY_MAP } from "../../src";
+import { ENTITY_MAP } from "../../src";
+import { createEntitySet } from '../../src/utils';
 
 
 describe('test-regexp', () => {
-  const entityPattern = createEntityPattern([ENTITY_MAP.Worklog]);
+  const entitySet = createEntitySet([ENTITY_MAP.Worklog]);
 
   it(`should return true`, async () => {
-    expect(entityPattern.test('Worklog')).equal(true);
+    expect(entitySet.has('Worklog')).equal(true);
   });
 
   it(`should return false`, async () => {
-    expect(entityPattern.test('WorklogVersion')).equal(false);
+    expect(entitySet.has('WorklogVersion')).equal(false);
   });
 });

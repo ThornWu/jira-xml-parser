@@ -5,8 +5,9 @@ import { EntityType } from "./constants";
  * @param patterns 需要匹配的字符串数组
  * @returns 正则表达式
  */
-export function createEntityPattern(patterns: string[]): RegExp {
-  return new RegExp(`^(?:${patterns.join('|')})(?!\\w)`);
+export function createEntitySet(patterns: string[]): Set<string> {
+  // return new RegExp(`^(?:${patterns.join('|')})(?!\\w)`);
+  return new Set(patterns);
 }
 
 export function getLastEntityType(entities: Array<EntityType>): EntityType {
