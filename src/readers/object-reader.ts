@@ -7,6 +7,7 @@ export const readObjectFile = async (filename: string, tables: Array<any>) => {
   const lastTable = tables.sort((a, b) => a.localeCompare(b))[tables.length - 1];
   const reader = new ObjectParser(filename, { tableSet, lastTable });
   const records: Record<string, Array<IRecord>> = {};
+  let isClearBuffer = false;
 
   return new Promise((resolve, reject) => {
     reader.on('record', function(_record: XmlNode) {
@@ -28,10 +29,18 @@ export const readObjectFile = async (filename: string, tables: Array<any>) => {
     })
 
     reader.on('end', function() {
+      if (!isClearBuffer) {
+        isClearBuffer = true;
+        reader.clearBuffers();
+      }
       resolve(records);
     })
 
     reader.on('error', function(err: Error) {
+      if (!isClearBuffer) {
+        isClearBuffer = true;
+        reader.clearBuffers();
+      }
       reject(err);
     })
   });

@@ -1,5 +1,5 @@
 diff --git a/lib/sax.js b/lib/sax.js
-index 122ad8e5a478339d56fc86d00d21c5d142739f0e..15afabaca31c26ab9d085e39f555bc5873c185c2 100644
+index 122ad8e5a478339d56fc86d00d21c5d142739f0e..b3c3827af42cc89ade4b5c8cb380cbe85e70d3b6 100644
 --- a/lib/sax.js
 +++ b/lib/sax.js
 @@ -13,7 +13,7 @@
@@ -19,7 +19,25 @@ index 122ad8e5a478339d56fc86d00d21c5d142739f0e..15afabaca31c26ab9d085e39f555bc58
      parser.tags = []
      parser.closed = parser.closedRoot = parser.sawRoot = false
      parser.tag = parser.error = null
-@@ -643,8 +642,8 @@
+@@ -139,6 +138,7 @@
+   }
+ 
+   function clearBuffers (parser) {
++    console.log('sax---clearBuffers');
+     for (var i = 0, l = buffers.length; i < l; i++) {
+       parser[buffers[i]] = ''
+     }
+@@ -204,6 +204,9 @@
+       // go ahead and clear error, so we can write again.
+       me._parser.error = null
+     }
++    this._parser.clearBuffers = function () {
++      clearBuffers(me._parser)
++    }
+ 
+     this._decoder = null
+ 
+@@ -643,8 +646,8 @@
    }
  
    function textopts (opt, text) {
@@ -30,7 +48,7 @@ index 122ad8e5a478339d56fc86d00d21c5d142739f0e..15afabaca31c26ab9d085e39f555bc58
      return text
    }
  
-@@ -686,7 +685,9 @@
+@@ -686,7 +689,9 @@
    }
  
    function newTag (parser) {
@@ -41,7 +59,7 @@ index 122ad8e5a478339d56fc86d00d21c5d142739f0e..15afabaca31c26ab9d085e39f555bc58
      var parent = parser.tags[parser.tags.length - 1] || parser
      var tag = parser.tag = { name: parser.tagName, attributes: {} }
  
-@@ -714,10 +715,6 @@
+@@ -714,10 +719,6 @@
    }
  
    function attrib (parser) {
@@ -52,7 +70,7 @@ index 122ad8e5a478339d56fc86d00d21c5d142739f0e..15afabaca31c26ab9d085e39f555bc58
      if (parser.attribList.indexOf(parser.attribName) !== -1 ||
        parser.tag.attributes.hasOwnProperty(parser.attribName)) {
        parser.attribName = parser.attribValue = ''
-@@ -867,9 +864,6 @@
+@@ -867,9 +868,6 @@
      // <a><b></c></b></a> will close everything, otherwise.
      var t = parser.tags.length
      var tagName = parser.tagName
@@ -62,7 +80,7 @@ index 122ad8e5a478339d56fc86d00d21c5d142739f0e..15afabaca31c26ab9d085e39f555bc58
      var closeTo = tagName
      while (t--) {
        var close = parser.tags[t]
-@@ -1533,9 +1527,9 @@
+@@ -1533,9 +1531,9 @@
        }
      } // while
  

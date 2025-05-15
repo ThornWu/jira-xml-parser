@@ -14,6 +14,7 @@ export const readEntityFile = async (filename: string, entities: Array<EntityTyp
     return acc;
   }, {} as Record<string, Array<IRecord>>);
   const compareFunc = typeof _compareFunc === 'function' ? _compareFunc : () => true;
+  let isClearBuffer = false;
 
   return new Promise((resolve, reject) => {
     reader.on('record', function(_record: XmlNode) {
@@ -31,10 +32,18 @@ export const readEntityFile = async (filename: string, entities: Array<EntityTyp
     })
 
     reader.on('end', function() {
+      if (!isClearBuffer) {
+        isClearBuffer = true;
+        reader.clearBuffers();
+      }
       resolve(records);
     })
 
     reader.on('error', function(err: Error) {
+      if (!isClearBuffer) {
+        isClearBuffer = true;
+        reader.clearBuffers();
+      }
       reject(err);
     })
   });

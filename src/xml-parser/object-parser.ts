@@ -118,4 +118,8 @@ export class ObjectParser extends EventEmitter {
   public resume(): void {
     this.stream.resume();
   }
+
+  public clearBuffers(): void {
+    this.parser._parser?.clearBuffers();
+  }
 }
