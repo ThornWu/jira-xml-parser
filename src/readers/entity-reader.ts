@@ -37,6 +37,7 @@ export const readEntityFile = async (filename: string, entities: Array<EntityTyp
         reader.clearBuffers();
       }
       resolve(records);
+      reader.destroy();
     })
 
     reader.on('error', function(err: Error) {
@@ -44,6 +45,7 @@ export const readEntityFile = async (filename: string, entities: Array<EntityTyp
         isClearBuffer = true;
         reader.clearBuffers();
       }
+      reader.destroy();
       reject(err);
     })
   });

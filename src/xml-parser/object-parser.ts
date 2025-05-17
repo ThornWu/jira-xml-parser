@@ -30,7 +30,7 @@ export class ObjectParser extends EventEmitter {
   constructor(filename: string, options: ObjectReaderOptions) {
     super();
 
-    this.parser = sax.createStream(false, { trim: false });
+    this.parser = new sax.SAXStream();
     this.stream = createReadStream(filename);
     this.node = {};
     this.nodes = [];
@@ -122,5 +122,9 @@ export class ObjectParser extends EventEmitter {
 
   public clearBuffers(): void {
     this.parser._parser?.clearBuffers();
+  }
+
+  public destroy(): void {
+    this.stream.destroy();
   }
 }

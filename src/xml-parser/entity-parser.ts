@@ -30,7 +30,7 @@ export class EntityParser extends EventEmitter {
   constructor(filename: string, options: EntityReaderOptions) {
     super();
 
-    this.parser = sax.createStream(false, { trim: false });
+    this.parser = new sax.SAXStream();
     this.stream = createReadStream(filename);
     this.node = {};
     this.nodes = [];
@@ -133,6 +133,10 @@ export class EntityParser extends EventEmitter {
 
   public resume(): void {
     this.stream.resume();
+  }
+
+  public destroy(): void {
+    this.stream.destroy();
   }
 
   public clearBuffers(): void {

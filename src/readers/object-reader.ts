@@ -33,6 +33,7 @@ export const readObjectFile = async (filename: string, tables: Array<any>) => {
         isClearBuffer = true;
         reader.clearBuffers();
       }
+      reader.destroy();
       resolve(records);
     })
 
@@ -41,6 +42,7 @@ export const readObjectFile = async (filename: string, tables: Array<any>) => {
         isClearBuffer = true;
         reader.clearBuffers();
       }
+      reader.destroy();
       reject(err);
     })
   });
