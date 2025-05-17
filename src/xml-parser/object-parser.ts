@@ -1,4 +1,5 @@
-import * as sax from 'sax';
+// @ts-ignore
+import * as sax from "../sax-ts/sax";
 import { createReadStream, type ReadStream } from 'fs';
 import { EventEmitter } from 'events';
 
