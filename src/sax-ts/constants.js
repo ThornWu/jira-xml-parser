@@ -1,10 +1,6 @@
-/**
- * SAX解析器使用的常量定义
- */
-
-// 缓冲区名称列表
+// 缓冲区名称列表 - 保持固定顺序以优化直接索引访问
 const buffers = [
-  'comment', 'sgmlDecl', 'textNode', 'tagName', 'doctype',
+  'textNode', 'tagName', 'comment', 'sgmlDecl', 'doctype',
   'procInstName', 'procInstBody', 'entity', 'attribName',
   'attribValue', 'cdata', 'script'
 ]
@@ -349,11 +345,17 @@ const STATE = {
   SCRIPT_ENDING: 35 // <script> ... <
 }
 
+// 将对象转换为Map以提高查找效率
+const SAX_ENTITIES_MAP = new Map(Object.entries(SAX_ENTITIES));
+const XML_ENTITIES_MAP = new Map(Object.entries(XML_ENTITIES));
+
 module.exports = {
   buffers,
   SAX_EVENTS,
   SAX_ENTITIES,
+  SAX_ENTITIES_MAP,
   XML_ENTITIES,
+  XML_ENTITIES_MAP,
   CDATA,
   DOCTYPE,
   nameStart,

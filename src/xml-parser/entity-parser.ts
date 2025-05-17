@@ -1,5 +1,5 @@
 // @ts-ignore
-import * as sax from "../sax-ts/sax";
+import * as sax from "../sax-ts/sax-stream";
 import { createReadStream, type ReadStream } from "fs";
 import { EventEmitter } from "events";
 export interface EntityReaderOptions {
@@ -60,12 +60,14 @@ export class EntityParser extends EventEmitter {
     this.parser.on("opentag", (_node: sax.Tag) => {
       this.level++;
       const name = _node.name;
-      this.isSkip =
-        this.level === 2
-          ? !entitySet.has(name)
-          : this.level === 1
-          ? false
-          : this.isSkip;
+
+      // 优化条件判断，减少三元运算符嵌套
+      if (this.level === 2) {
+        this.isSkip = !entitySet.has(name);
+      } else if (this.level === 1) {
+        this.isSkip = false;
+      }
+
       if (this.isSkip) {
         return;
       }

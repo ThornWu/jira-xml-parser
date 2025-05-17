@@ -34,8 +34,8 @@
     "dev": "ts-node whole/index.ts",
     "prepare": "npm run build",
     "test": "mocha -r ts-node/register 'test/**/*.test.ts'",
-    "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix"
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "es-toolkit": "^1.35.0"
@@ -48,8 +48,8 @@
     "@typescript-eslint/parser": "^6.18.1",
     "chai": "^4.4.1",
     "eslint": "^8.57.0",
-    "mocha": "^10.2.0",
-    "ts-mocha": "^10.0.0",
+    "mocha": "^11.3.0",
+    "ts-mocha": "^11.1.0",
     "ts-node": "^10.9.2",
     "tslib": "^2.8.1",
     "tsup": "^8.0.2",
