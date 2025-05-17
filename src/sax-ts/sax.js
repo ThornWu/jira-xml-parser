@@ -19,30 +19,44 @@ const {
 
 
 // 主要功能定义
-function SAXParser() {
-  if (!(this instanceof SAXParser)) {
-    return new SAXParser()
+class SAXParser {
+  constructor() {
+    if (!(this instanceof SAXParser)) {
+      return new SAXParser()
+    }
+
+    clearBuffers(this)
+    this.q = this.c = ''
+    this.tags = []
+    this.closed = this.closedRoot = this.sawRoot = false
+    this.tag = this.error = null
+    this.noscript = false
+    this.state = STATE.BEGIN
+    this.attribList = []
+
+    emit(this, 'onready')
   }
 
-  var parser = this
-  clearBuffers(parser)
-  parser.q = parser.c = ''
-  parser.tags = []
-  parser.closed = parser.closedRoot = parser.sawRoot = false
-  parser.tag = parser.error = null
-  parser.noscript = false
-  parser.state = STATE.BEGIN
-  parser.attribList = []
+  end() {
+    return end(this)
+  }
 
-  emit(parser, 'onready')
-}
+  write(data) {
+    return write.call(this, data)
+  }
 
-SAXParser.prototype = {
-  end: function () { return end(this) },
-  write: write,
-  resume: function () { this.error = null; return this },
-  close: function () { return this.write(null) },
-  flush: function () { flushBuffers(this) }
+  resume() {
+    this.error = null;
+    return this
+  }
+
+  close() {
+    return this.write(null)
+  }
+
+  flush() {
+    flushBuffers(this)
+  }
 }
 
 var streamWraps = SAX_EVENTS.filter(function (ev) {
@@ -155,7 +169,17 @@ function end(parser) {
   parser.c = ''
   parser.closed = true
   emit(parser, 'onend')
-  SAXParser.call(parser)
+
+  // 重置解析器状态
+  clearBuffers(parser)
+  parser.q = parser.c = ''
+  parser.tags = []
+  parser.closed = parser.closedRoot = parser.sawRoot = false
+  parser.tag = parser.error = null
+  parser.noscript = false
+  parser.state = STATE.BEGIN
+  parser.attribList = []
+
   return parser
 }
 
