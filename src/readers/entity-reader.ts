@@ -6,17 +6,16 @@ import { createEntitySet, getLastEntityType } from '../utils';
 type IRecord = Omit<XmlNode, '_tag'>;
 
 export const readEntityFile = async (filename: string, entities: Array<EntityType>, _compareFunc?: (record: Record<string, unknown>) => boolean) => {
-  const lastEntity = getLastEntityType(entities);
-  const entitySet = createEntitySet(entities);
-  const reader = new EntityParser(filename, { entitySet, lastEntity });
-  const records: Record<string, Array<IRecord>> = entities.reduce((acc, current) => {
-    acc[current] = [];
-    return acc;
-  }, {} as Record<string, Array<IRecord>>);
-  const compareFunc = typeof _compareFunc === 'function' ? _compareFunc : () => true;
-  let isClearBuffer = false;
-
   return new Promise((resolve, reject) => {
+    const lastEntity = getLastEntityType(entities);
+    const entitySet = createEntitySet(entities);
+    const reader = new EntityParser(filename, { entitySet, lastEntity });
+    const compareFunc = typeof _compareFunc === 'function' ? _compareFunc : () => true;
+    let isClearBuffer = false;
+    const records: Record<string, Array<IRecord>> = entities.reduce((acc, current) => {
+      acc[current] = [];
+      return acc;
+    }, {} as Record<string, Array<IRecord>>);
     reader.on('record', function(_record: XmlNode) {
       if (!compareFunc(_record)) {
         return;

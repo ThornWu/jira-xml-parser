@@ -139,6 +139,10 @@ export class EntityParser extends EventEmitter {
 
   public destroy(): void {
     this.stream.destroy();
+    // 清理缓存和引用，避免内存泄漏
+    this.tagCache.clear();
+    this.nodes = [];
+    this.node = {};
   }
 
   public clearBuffers(): void {

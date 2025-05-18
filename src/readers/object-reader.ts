@@ -3,13 +3,12 @@ import { ObjectParser, type XmlNode } from '../xml-parser/object-parser';
 type IRecord = Omit<XmlNode, '_tag'>;
 
 export const readObjectFile = async (filename: string, tables: Array<any>) => {
-  const tableSet = new Set(tables);
-  const lastTable = tables.sort((a, b) => a.localeCompare(b))[tables.length - 1];
-  const reader = new ObjectParser(filename, { tableSet, lastTable });
-  const records: Record<string, Array<IRecord>> = {};
-  let isClearBuffer = false;
-
   return new Promise((resolve, reject) => {
+    const tableSet = new Set(tables);
+    const lastTable = tables.sort((a, b) => a.localeCompare(b))[tables.length - 1];
+    const reader = new ObjectParser(filename, { tableSet, lastTable });
+    let isClearBuffer = false;
+    const records: Record<string, Array<IRecord>> = {};
     reader.on('record', function(_record: XmlNode) {
       const tableName = _record.tableName;
       records[tableName] = [] as Array<IRecord>;
