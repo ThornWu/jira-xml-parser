@@ -7,11 +7,22 @@ export const readObjectFile = async (filename: string, tables: Array<any>) => {
     const tableSet = new Set(tables);
     const lastTable = tables.sort((a, b) => a.localeCompare(b))[tables.length - 1];
     const reader = new ObjectParser(filename, { tableSet, lastTable });
-    let isClearBuffer = false;
-    const records: Record<string, Array<IRecord>> = {};
+    let isCleanUp = false;
+    let records: Record<string, Array<IRecord>> = {};
+    const cleanUp = () => {
+      if (!isCleanUp) {
+        isCleanUp = true;
+        reader.clearBuffers();
+        reader.destroy();
+      }
+    }
+
     reader.on('record', function(_record: XmlNode) {
       const tableName = _record.tableName;
-      records[tableName] = [] as Array<IRecord>;
+      // 修复内存问题：只在第一次创建数组，避免覆盖已有数据
+      if (!records[tableName]) {
+        records[tableName] = [] as Array<IRecord>;
+      }
       const columns: Array<string> = [];
       _record.children?.forEach((child: XmlNode) => {
         if (child._tag === 'row') {
@@ -27,22 +38,15 @@ export const readObjectFile = async (filename: string, tables: Array<any>) => {
       });
     })
 
+
     reader.on('end', function() {
-      if (!isClearBuffer) {
-        isClearBuffer = true;
-        reader.clearBuffers();
-      }
-      reader.destroy();
       resolve(records);
+      cleanUp();
     })
 
     reader.on('error', function(err: Error) {
-      if (!isClearBuffer) {
-        isClearBuffer = true;
-        reader.clearBuffers();
-      }
-      reader.destroy();
       reject(err);
+      cleanUp();
     })
   });
 }

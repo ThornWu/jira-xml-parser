@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { readEntityFile } from '../../src';
 import fs from 'fs';
 import path from 'path';
-import { omitBy } from 'es-toolkit';
 import { ENTITY_MAP } from '../../src/constants';
 
 const issuesSet = new Set(['10011']);

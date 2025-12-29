@@ -11,15 +11,24 @@ export const readEntityFile = async (filename: string, entities: Array<EntityTyp
     const entitySet = createEntitySet(entities);
     const reader = new EntityParser(filename, { entitySet, lastEntity });
     const compareFunc = typeof _compareFunc === 'function' ? _compareFunc : () => true;
-    let isClearBuffer = false;
-    const records: Record<string, Array<IRecord>> = entities.reduce((acc, current) => {
+    let isCleanUp = false;
+
+    let records: Record<string, Array<IRecord>> = entities.reduce((acc, current) => {
       acc[current] = [];
       return acc;
     }, {} as Record<string, Array<IRecord>>);
+    const cleanUp = () => {
+      if (!isCleanUp) {
+        isCleanUp = true;
+        reader.clearBuffers();
+        reader.destroy();
+      }
+    }
     reader.on('record', function(_record: XmlNode) {
       if (!compareFunc(_record)) {
         return;
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { _tag, _level, children = [], ...record } = _record;
       if (children.length > 0) {
         children.forEach((child: XmlNode) => {
@@ -31,21 +40,13 @@ export const readEntityFile = async (filename: string, entities: Array<EntityTyp
     })
 
     reader.on('end', function() {
-      if (!isClearBuffer) {
-        isClearBuffer = true;
-        reader.clearBuffers();
-      }
       resolve(records);
-      reader.destroy();
+      cleanUp();
     })
 
     reader.on('error', function(err: Error) {
-      if (!isClearBuffer) {
-        isClearBuffer = true;
-        reader.clearBuffers();
-      }
-      reader.destroy();
       reject(err);
+      cleanUp();
     })
   });
 }

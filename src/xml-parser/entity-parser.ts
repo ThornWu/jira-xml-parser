@@ -14,7 +14,7 @@ export interface XmlNode {
   _level?: number;
   text?: string;
   children?: XmlNode[];
-  [key: string]: any;
+  [key: string]: unknown; // 使用 unknown 代替 any
 }
 
 export class EntityParser extends EventEmitter {
@@ -138,11 +138,21 @@ export class EntityParser extends EventEmitter {
   }
 
   public destroy(): void {
+    // 断开 stream 和 parser 的连接
+    this.stream.unpipe(this.parser);
     this.stream.destroy();
+
     // 清理缓存和引用，避免内存泄漏
     this.tagCache.clear();
     this.nodes = [];
     this.node = {};
+
+    // 移除所有事件监听器
+    // this.removeAllListeners();
+    // this.parser.removeAllListeners();
+
+    // 将 parser 设置为 null，帮助垃圾回收
+    (this.parser as unknown as Record<string, never>) = {};
   }
 
   public clearBuffers(): void {
