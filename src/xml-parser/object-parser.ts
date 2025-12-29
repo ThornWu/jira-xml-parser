@@ -26,6 +26,7 @@ export class ObjectParser extends EventEmitter {
   private tableSet: Set<string>;
   private lastTable: string;
   private isLast: boolean;
+  private destroyed: boolean;
 
   constructor(filename: string, options: ObjectReaderOptions) {
     super();
@@ -39,6 +40,7 @@ export class ObjectParser extends EventEmitter {
     this.isLast = false;
     this.tableSet = options.tableSet;
     this.lastTable = options.lastTable;
+    this.destroyed = false;
 
     this.setupParserHandlers();
     this.stream.pipe(this.parser);
@@ -125,12 +127,17 @@ export class ObjectParser extends EventEmitter {
   }
 
   public destroy(): void {
+    if (this.destroyed) {
+      return;
+    }
+    this.destroyed = true;
+
     // 断开 stream 和 parser 的连接
     this.stream.unpipe(this.parser);
     this.stream.destroy();
 
     // 清理缓存和引用，避免内存泄漏
-    this.nodes = [];
+    this.nodes.length = 0;
     this.node = {};
     this.tableSet.clear();
 

@@ -25,7 +25,9 @@ export class EntityParser extends EventEmitter {
   private level: number;
   private isSkip: boolean;
   private lastEntity: string;
-  private tagCache: Map<string, boolean>;
+  private destroyed: boolean;
+  private hasEmittedRecord: boolean;
+  private ended: boolean;
 
   constructor(filename: string, options: EntityReaderOptions) {
     super();
@@ -37,19 +39,20 @@ export class EntityParser extends EventEmitter {
     this.level = 0;
     this.isSkip = false;
     this.lastEntity = options.lastEntity || "";
-    this.tagCache = new Map();
+    this.destroyed = false;
+    this.hasEmittedRecord = false;
+    this.ended = false;
 
     this.setupParserHandlers(options.entitySet);
     this.stream.pipe(this.parser);
   }
 
-  private isValidTag(name: string): boolean {
-    let result = this.tagCache.get(name);
-    if (result === undefined) {
-      result = name.localeCompare(this.lastEntity) <= 0;
-      this.tagCache.set(name, result);
+  private finish(): void {
+    if (this.ended) {
+      return;
     }
-    return result;
+    this.ended = true;
+    this.emit("end");
   }
 
   private setupParserHandlers(entitySet: Set<string>): void {
@@ -114,17 +117,19 @@ export class EntityParser extends EventEmitter {
 
         if (entitySet.has(name)) {
           this.emit("record", this.node);
+          this.hasEmittedRecord = true;
         }
       } else {
         // 如果当前标签的字母序已经超过了最后一个实体，提前结束解析
-        if (this.level === 1 && !this.isValidTag(name)) {
+        if (this.level === 1 && this.hasEmittedRecord && name.localeCompare(this.lastEntity) > 0) {
+          this.finish();
           this.stream.destroy();
-          this.emit("end");
           return;
         }
-        if (this.level === 0) {
-          this.emit("end");
-        }
+      }
+
+      if (this.level === 0) {
+        this.finish();
       }
     });
   }
@@ -138,18 +143,23 @@ export class EntityParser extends EventEmitter {
   }
 
   public destroy(): void {
+    if (this.destroyed) {
+      return;
+    }
+    this.destroyed = true;
+    this.ended = true;
+
     // 断开 stream 和 parser 的连接
     this.stream.unpipe(this.parser);
     this.stream.destroy();
 
     // 清理缓存和引用，避免内存泄漏
-    this.tagCache.clear();
-    this.nodes = [];
+    this.nodes.length = 0;
     this.node = {};
 
     // 移除所有事件监听器
-    // this.removeAllListeners();
-    // this.parser.removeAllListeners();
+    this.removeAllListeners();
+    this.parser.removeAllListeners();
 
     // 将 parser 设置为 null，帮助垃圾回收
     (this.parser as unknown as Record<string, never>) = {};
