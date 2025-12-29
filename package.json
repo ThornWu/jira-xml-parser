@@ -1,6 +1,6 @@
 {
   "name": "@thornfe/jira-xml-parser",
-  "version": "0.1.15-alpha.0",
+  "version": "0.1.16-alpha.0",
   "description": "Lightweight Jira Xml Parser for big files (uses sax)",
   "author": {
     "name": "Thorn Wu",
